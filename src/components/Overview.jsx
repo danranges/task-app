@@ -1,13 +1,18 @@
 const Overview = (props) => {
-  const { tasks } = props;
+  const { tasks, deleteTask } = props;
+
+  const handleDelete = (uuid) => {
+    deleteTask(uuid);
+  };
 
   return (
     <ul style={{ listStyleType: 'none' }}>
-      {tasks.map((task, index) => {
+      {tasks.map((task, idx) => {
         return (
-          <div>
-            <li key={index}>
-              {index + 1}. {task}
+          <div style={{ display: 'flex' }} key={task.uuid}>
+            <button onClick={() => handleDelete(task.uuid)}>X</button>
+            <li>
+              {idx + 1} {task.name}
             </li>
           </div>
         );

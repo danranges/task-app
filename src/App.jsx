@@ -1,4 +1,5 @@
 import React from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import Overview from './components/Overview';
 import './App.css';
 
@@ -8,23 +9,29 @@ class App extends React.Component {
     this.state = {
       task: {
         name: '',
+        id: '',
       },
       taskList: [],
     };
-
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  handleChange(e) {
-    this.setState({ task: e.target.value });
-  }
+  handleChange = (e) => {
+    this.setState({
+      task: {
+        name: e.target.value,
+        uuid: uuidv4(),
+      },
+    });
+  };
 
-  handleSubmit(e) {
+  handleDelete = (uuid) => {
+    this.setState({ taskList: this.state.taskList.filter((task) => task.uuid !== uuid) });
+  };
+
+  handleSubmit = (e) => {
     e.preventDefault();
-     
-    this.setState({ taskList: this.state.taskList.concat(this.state.task), task: { name: '' }});
-  }
+    this.setState({ taskList: this.state.taskList.concat(this.state.task), task: { name: '' } });
+  };
 
   render() {
     return (
@@ -33,7 +40,7 @@ class App extends React.Component {
           <input type="text" value={this.state.task.name} onChange={this.handleChange}></input>
           <button type="submit">Add Task</button>
         </form>
-        <Overview tasks={this.state.taskList}></Overview>
+        <Overview tasks={this.state.taskList} deleteTask={this.handleDelete}></Overview>
       </div>
     );
   }
