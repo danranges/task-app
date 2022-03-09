@@ -9,7 +9,8 @@ class App extends React.Component {
     this.state = {
       task: {
         name: '',
-        id: '',
+        uuid: uuidv4(),
+        editing: false,
       },
       taskList: [],
     };
@@ -19,7 +20,8 @@ class App extends React.Component {
     this.setState({
       task: {
         name: e.target.value,
-        uuid: uuidv4(),
+        uuid: this.state.task.uuid,
+        editing: false,
       },
     });
   };
@@ -28,9 +30,26 @@ class App extends React.Component {
     this.setState({ taskList: this.state.taskList.filter((task) => task.uuid !== uuid) });
   };
 
+  handleEditingState = (uuid) => {
+    const tasks = [...this.state.taskList];
+    const task = tasks.find((task) => task.uuid === uuid);
+    task.editing = !task.editing;
+    this.setState({ taskList: tasks });
+  };
+
+  handleEdit = (e, uuid) => {
+    const tasks = [...this.state.taskList];
+    const task = tasks.find((task) => task.uuid === uuid);
+    task.name = e.target.value;
+    this.setState({ taskList: tasks });
+  };
+
   handleSubmit = (e) => {
     e.preventDefault();
-    this.setState({ taskList: this.state.taskList.concat(this.state.task), task: { name: '' } });
+    this.setState({
+      taskList: this.state.taskList.concat(this.state.task),
+      task: { name: '', uuid: uuidv4(), editing: false },
+    });
   };
 
   render() {
@@ -40,7 +59,11 @@ class App extends React.Component {
           <input type="text" value={this.state.task.name} onChange={this.handleChange}></input>
           <button type="submit">Add Task</button>
         </form>
-        <Overview tasks={this.state.taskList} deleteTask={this.handleDelete}></Overview>
+        <Overview
+          tasks={this.state.taskList}
+          deleteTask={this.handleDelete}
+          editTask={this.handleEditingState}
+          commitEdit={this.handleEdit}></Overview>
       </div>
     );
   }
